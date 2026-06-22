@@ -1,0 +1,100 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Risk Dashboard
+{% endblock %}
+
+{% block main %}
+<div class="container-fluid text-start">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Enterprise Risk Portfolio</h2>
+        <div>
+            <a href="/asset/add" class="btn btn-primary me-2">+ Add Asset</a>
+            <a href="/assess" class="btn btn-danger">🛡️ Assess Threat</a>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4 text-center">
+        <div class="col-md-4">
+            <div class="card bg-dark text-white shadow-sm">
+                <div class="card-body">
+                    <h6 class="card-title text-muted text-uppercase small">Monitored Assets</h6>
+                    <h2 class="display-6 font-weight-bold">{{ assets | length }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-light border shadow-sm">
+                <div class="card-body">
+                    <h6 class="card-title text-muted text-uppercase small">Total Active Vulnerabilities</h6>
+                    <h2 class="display-6 text-danger font-weight-bold">
+                        {{ assets | map(attribute='open_vulns') | sum }}
+                    </h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-light border shadow-sm">
+                <div class="card-body">
+                    <h6 class="card-title text-muted text-uppercase small">Average Risk Index</h6>
+                    <h2 class="display-6 text-warning font-weight-bold">
+                        {% set total_risk = assets | map(attribute='avg_risk') | select('number') | sum %}
+                        {% set count = assets | map(attribute='avg_risk') | select('number') | list | length %}
+                        {{ (total_risk / count) | round(2) if count > 0 else '0.00' }} / 10
+                    </h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-white py-3">
+            <h5 class="card-title mb-0">Monitored Asset Repositories</h5>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Asset Name</th>
+                        <th>Type</th>
+                        <th>Criticality Tier</th>
+                        <th>Active Vulns</th>
+                        <th>Avg Severity Score</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for asset in assets %}
+                    <tr>
+                        <td><strong>{{ asset.name }}</strong></td>
+                        <td><span class="badge bg-secondary">{{ asset.asset_type }}</span></td>
+                        <td>
+                            <span class="badge {% if asset.criticality == 'Critical' or asset.criticality == 'High' %}bg-danger{% else %}bg-warning text-dark{% endif %}">
+                                {{ asset.criticality }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge rounded-pill {% if asset.open_vulns > 0 %}bg-danger{% else %}bg-success{% endif %}">
+                                {{ asset.open_vulns }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="fw-bold {% if asset.avg_risk and asset.avg_risk >= 7.0 %}text-danger{% elif asset.avg_risk and asset.avg_risk >= 4.0 %}text-warning{% else %}text-success{% endif %}">
+                                {{ asset.avg_risk | round(2) if asset.avg_risk else '0.0' }}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="/assess" class="btn btn-sm btn-outline-dark">Scan Threat</a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-4">No enterprise infrastructure assets logged yet. Begin by adding an inventory resource target above.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

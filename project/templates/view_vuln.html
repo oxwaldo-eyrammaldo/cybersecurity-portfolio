@@ -1,0 +1,52 @@
+{% extends "layout.html" %}
+
+{% block title %}Vulnerability Audit{% endblock %}
+
+{% block main %}
+<div class="container text-start">
+    <div class="card mb-4 border-danger shadow-sm">
+        <div class="card-body">
+            <span class="badge bg-danger float-end">{{ vulnerability.severity }}</span>
+            <h2 class="card-title text-danger">{{ vulnerability.title }}</h2>
+            <h6 class="text-muted">Target Asset: {{ vulnerability.asset_name }} | Calculated Risk Score: <strong>{{ vulnerability.risk_score }}</strong></h6>
+            <hr>
+            <p class="card-text">{{ vulnerability.description }}</p>
+            <div class="p-3 bg-light rounded font-monospace"><small>{{ vulnerability.ai_analysis_summary }}</small></div>
+        </div>
+    </div>
+
+    <h4>Mapped Compliance Controls Framework Checklist</h4>
+    <div class="card shadow-sm">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th style="width: 40px;">Status</th>
+                    <th>Control ID</th>
+                    <th>Framework</th>
+                    <th>Name</th>
+                    <th>Actionable Remediation Steps</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for control in controls %}
+                <tr class="{% if control.is_implemented == 1 %}table-success{% endif %}">
+                    <td>
+                        <input type="checkbox" class="form-check-input control-toggle-checkbox" data-control-id="{{ control.id }}" {% if control.is_implemented == 1 %}checked{% endif %}>
+                    </td>
+                    <td><strong>{{ control.control_id }}</strong></td>
+                    <td><span class="badge bg-secondary">{{ control.framework_standard }}</span></td>
+                    <td><strong>{{ control.control_name }}</strong></td>
+                    <td><small class="text-muted">{{ control.remediation_steps }}</small></td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" class="text-center text-muted py-3">No compliance controls suggested for this vulnerability payload.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="/static/dashboard.js"></script>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Add Asset
+{% endblock %}
+
+{% block main %}
+<div class="container text-start" style="max-width: 550px;">
+    <div class="mb-4">
+        <h2>Infrastructure Target Registry</h2>
+        <p class="text-muted">Register a new network node, server instance, application repository, or operational database target cluster to your monitoring boundary layer.</p>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body p-4">
+            <form action="/asset/add" method="post">
+                <div class="mb-3">
+                    <label for="name" class="form-label fw-bold">Asset Descriptive Name</label>
+                    <input type="text" class="form-control" id="name" name="name" placeholder="e.g., Production AWS PostgreSQL Database Cluster" autocomplete="off" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="asset_type" class="form-label fw-bold">Asset Structural Type</label>
+                    <select class="form-select" id="asset_type" name="asset_type" required>
+                        <option value="" disabled selected>Select system inventory layout type...</option>
+                        <option value="Database Cluster">Database Cluster</option>
+                        <option value="Web Application Server">Web Application Server</option>
+                        <option value="API Gateway Engine">API Gateway Engine</option>
+                        <option value="Cloud Compute Node">Cloud Compute Node</option>
+                        <option value="Container Runtime Registry">Container Runtime Registry</option>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label for="criticality" class="form-label fw-bold">Enterprise Criticality Tier Target</label>
+                    <select class="form-select" id="criticality" name="criticality" required>
+                        <option value="Low">Low (Non-production environments or internal sandboxes)</option>
+                        <option value="Medium" selected>Medium (Standard core systems, logging blocks, or staging nodes)</option>
+                        <option value="High">High (User facing pipelines or primary transactional applications)</option>
+                        <option value="Critical">Critical (Mission critical root authentication endpoints or databases)</option>
+                    </select>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary btn-lg">Commit Asset Target</button>
+                    <a href="/" class="btn btn-outline-secondary">Cancel and Return</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

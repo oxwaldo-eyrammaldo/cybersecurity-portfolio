@@ -1,0 +1,66 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Run Risk Assessment
+{% endblock %}
+
+{% block main %}
+<div class="container text-start" style="max-width: 720px;">
+    <div class="mb-4">
+        <h2>🛡️ New Risk Analysis Ingestion</h2>
+        <p class="text-muted">Log a newly identified threat vectors or vulnerability disclosure payload. The internal AI validation service will map corresponding NIST SP 800-53 controls automatically.</p>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body p-4">
+            <form action="/assess" method="post">
+
+                <div class="mb-3">
+                    <label for="asset_id" class="form-label fw-bold">Target Infrastructure Asset Repository</label>
+                    <select class="form-select" id="asset_id" name="asset_id" required>
+                        <option value="" disabled selected>Select monitored inventory target...</option>
+                        {% for asset in assets %}
+                            <option value="{{ asset.id }}">{{ asset.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <div class="form-text">Choose the verified target enterprise system that houses this risk boundary.</div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="title" class="form-label fw-bold">Vulnerability/Threat Title</label>
+                    <input type="text" class="form-control" id="title" name="title" placeholder="e.g., Remote Code Execution in API parser component" autocomplete="off" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold d-block">Initial Baseline Severity Metric</label>
+                    <div class="btn-group w-100" role="group" aria-label="Severity triage tiers selector">
+                        <input type="radio" class="btn-check" name="severity" id="sev_low" value="Low" checked>
+                        <label class="btn btn-outline-success" for="sev_low">Low</label>
+
+                        <input type="radio" class="btn-check" name="severity" id="sev_med" value="Medium">
+                        <label class="btn btn-outline-warning" for="sev_med">Medium</label>
+
+                        <input type="radio" class="btn-check" name="severity" id="sev_high" value="High">
+                        <label class="btn btn-outline-danger" for="sev_high">High</label>
+
+                        <input type="radio" class="btn-check" name="severity" id="sev_crit" value="Critical">
+                        <label class="btn btn-outline-dark" for="sev_crit">Critical</label>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label for="description" class="form-label fw-bold">Threat Context & Vulnerability Description</label>
+                    <textarea class="form-control" id="description" name="description" rows="5" placeholder="Provide raw details, parsed log extractions, structural trace variables, or specific vector configuration flaws for the AI model to analyze..." required></textarea>
+                    <div class="form-text">Tip: Explicit details here lead to higher precision mitigation steps mapping back from standard control sets.</div>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-danger btn-lg">Execute AI Analysis Engine</button>
+                    <a href="/" class="btn btn-outline-secondary">Cancel and Return</a>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
